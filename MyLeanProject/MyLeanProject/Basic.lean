@@ -8,16 +8,43 @@ inductive PropForm where
   | impl   : PropForm → PropForm → PropForm
   | neg    : PropForm → PropForm
   | biImpl : PropForm → PropForm → PropForm
-  deriving Repr, DecidableEq
+  deriving DecidableEq
 
 open PropForm
 
 def example1 := impl (conj (var "p") (var "q")) (var "r")
 
+
 def List.unionStr (l1 l2 : List String) : List String :=
   l1 ++ (l2.filter (fun x => !l1.contains x))
 
 namespace PropForm
+declare_syntax_cat propform
+
+syntax "prop!{" propform "}"  : term
+
+syntax:max ident                        : propform
+syntax "⊤"                              : propform
+syntax "⊥"                              : propform
+syntax:35 propform:36 " ∧ " propform:35 : propform
+syntax:30 propform:31 " ∨ " propform:30 : propform
+syntax:20 propform:21 " → " propform:20 : propform
+syntax:20 propform:21 " ↔ " propform:20 : propform
+syntax:max "¬ " propform:40             : propform
+syntax:max "(" propform ")"             : propform
+
+macro_rules
+  | `(prop!{$p:ident}) => `(PropForm.var $(Lean.quote p.getId.toString))
+  | `(prop!{⊤})        => `(ProfForm.tr)
+  | `(prop!{⊥})        => `(ProfForm.fls)
+  | `(prop!{¬ $p})     => `(PropForm.neg prop!{$p})
+  | `(prop!{$p ∧ $q})  => `(PropForm.conj prop!{$p} prop!{$q})
+  | `(prop!{$p ∨ $q})  => `(PropForm.disj prop!{$p} prop!{$q})
+  | `(prop!{$p → $q})  => `(PropForm.impl prop!{$p} prop!{$q})
+  | `(prop!{$p ↔ $q})  => `(PropForm.biImpl prop!{$p} prop!{$q})
+  | `(prop!{($p:propform)}) => `(prop!{$p})
+
+
 
 def complexity : PropForm → Nat
   | var _ => 0
@@ -67,6 +94,10 @@ end PropForm
 
 
 def propExample := conj (var "p") (impl (var "q") (var "r"))
+def propExample2 := prop!{p ∧ (q → r)}
+#eval propExample2
+#eval propExample2 = propExample
+#eval propExample.toString
 
 #eval propExample.complexity
 #eval propExample.depth
