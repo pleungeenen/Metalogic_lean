@@ -105,7 +105,6 @@ def PropForm.toCnfForm (A : PropForm) : CnfForm :=
 
 def testFormula1 := conj (conj (var "p1") (var "p2")) (disj (var "q1") (var "q2"))
 #eval testFormula1.toCnfForm.toString
-
-def testFormula2 := disj (disj (conj (var "p1") (var "p2")) (conj (var "q1") (var "q2")))
+ def testFormula2 := disj (disj (conj (var "p1") (var "p2")) (conj (var "q1") (var "q2")))
                          (disj (conj (var "r1") (var "r2")) (conj (var "s1") (var "s2")))
 #eval testFormula2.toCnfForm.toString
