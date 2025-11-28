@@ -46,9 +46,3 @@ def PropForm.isSat (A : PropForm) : Bool :=
   List.any (truthTable A) Prod.snd
 
 def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
-
-#eval propExample.eval testAssignment
-#eval allSublists propExample.vars
-#eval truthTable propExample
-#eval propExample.isValid
-#eval propExample.isSat
