@@ -119,3 +119,16 @@ def duality : PropForm -> PropForm
 #eval duality (conj (var "p") (var "q"))
 #eval duality (disj (var "k") (var "l"))
 #eval duality (conj (conj (var "p") (var "q")) (var "r"))
+
+def duality2 : PropForm -> PropForm
+  | tr => fls
+  | fls => tr
+  | var s => var s
+  | neg A => neg (duality2 A)
+  | conj A B => disj (duality2 A) (duality2 B)
+  | disj A B => conj (duality2 A) (duality2 B)
+  | impl A B => impl (duality2 A) (duality2 B)
+  | biImpl A B => biImpl (duality2 A) (duality2 B)
+
+  #eval duality2 (conj (conj (var "p") (var "k")) (var "l"))
+  #eval duality2 (disj (disj (var "p") (var "k")) (var "l"))
