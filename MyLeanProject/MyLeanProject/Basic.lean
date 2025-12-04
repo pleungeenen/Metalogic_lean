@@ -133,3 +133,26 @@ def duality2 : PropForm -> PropForm
 
   #eval duality2 (conj (conj (var "p") (var "k")) (var "l"))
   #eval duality2 (disj (disj (var "p") (var "k")) (var "l"))
+
+/-moet negation pakken, dus fls => tr?-/
+def auxiliary : PropForm -> PropForm
+  | tr => fls
+  | fls => tr
+  | var s => neg (var s)
+  | neg A => neg (auxiliary A)
+  | conj A B => disj (auxiliary A) (auxiliary B)
+  | disj A B => conj (auxiliary A) (auxiliary B)
+  | impl A B => impl (auxiliary A) (auxiliary B)
+  | biImpl A B => biImpl (auxiliary A) (auxiliary B)
+
+/-PropForm1 = formule, String = variable, PropForm2 = vervanging en PropForm3 = resultaat-/
+/-begrijp var hier niet vragen nog, zit ook error in-/
+def substitution : PropForm -> String -> PropForm -> PropForm
+  | tr => tr
+  | fls => fls
+  | var A1, x, B => A1 = x gives var B
+  | neg A1, x, B => neg (substitution A1 x B)
+  | conj A1 A2, x, B => conj (substitution A1 x B) (substitution A2 x B)
+  | disj A1 A2, x, B => disj (substitution A1 x B) (substitution A2 x B)
+  | impl A1 A2, x, B => impl (substitution A1 x B) (substitution A2 x B)
+  | biImpl A1 A2 x B => (substitution A1 x B) (substitution A2 x B)
