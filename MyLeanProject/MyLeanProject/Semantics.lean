@@ -1,5 +1,3 @@
-
-
 import MyLeanProject.Basic
 
 open PropForm
@@ -12,6 +10,7 @@ def eval (v : PropAssignment) (s : String) : Bool :=
   match v.find? (fun p => p.1 == s) with
   | some (_, b) => b
   | none => false
+
 
 def mk (l : List (String × Bool)) : PropAssignment := l
 
@@ -39,11 +38,20 @@ def truthTable (A : PropForm) : List (List Bool × Bool) :=
   let evalLine := fun v : PropAssignment => (vars.map v.eval, A.eval v)
   assignments.map evalLine
 
+
 def PropForm.isValid (A : PropForm) : Bool :=
   List.all (truthTable A) Prod.snd
 
 def PropForm.isSat (A : PropForm) : Bool :=
   List.any (truthTable A) Prod.snd
+
+notation "⊨" A => PropForm.isValid A
+#check ⊨ var "p"
+
+notation A "AND" B => PropForm.conj A B
+#eval var "p" AND var "q"
+
+theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by sorry
 
 def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 

@@ -1,5 +1,3 @@
-
-
 import MyLeanProject.Basic
 
 open PropForm
