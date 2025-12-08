@@ -51,6 +51,9 @@ notation "⊨" A => PropForm.isValid A
 notation A "AND" B => PropForm.conj A B
 #eval var "p" AND var "q"
 
+notation A "OR" B => PropForm.disj A B
+#eval var "p" OR var "q"
+
 
 def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 
@@ -66,7 +69,8 @@ def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 /-<;> zorgt ervoor dat rfl op beide onderdelen wordt toegepast-/
 /-simp[auxiliary, PropForm.eval] =  aan de linkerkant wordt de auxiliary geevalueerd, aan de rechterkant de negatie hiervan -/
 /- rw = rewrite -/
-theorem auxiliary (A : PropForm) : (v : PropAssignment) (auxiliary A).eval v = (neg A).eval v := by
+/-zit een error in?-/
+theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).eval v = (neg A).eval v := by
   | tr => simp[auxiliary, PropForm.eval] rfl
   | fls => simp[auxiliary,PropForm.eval] rfl
   | var s => simp[auxiliary,PropForm.eval] rfl
@@ -90,5 +94,8 @@ theorem auxiliary (A : PropForm) : (v : PropAssignment) (auxiliary A).eval v = (
               rw[t1, t2]
               simp[PropForm.eval]
               cases A1.eval v <;> cases A2.eval v <;> rfl
+
+/--dit nog uitwerken-/
+theorem substitution_theorem (A B C : PropForm) (t : String) : (⊨ (biImpl A B)) -> (⊨ (biImpl (substitution t A C) (substitution t B C))) := by sorry
 
 theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by sorry
