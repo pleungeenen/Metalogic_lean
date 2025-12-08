@@ -148,12 +148,16 @@ def auxiliary : PropForm -> PropForm
 /-PropForm1 = formule, String = variable, PropForm2 = vervanging en PropForm3 = resultaat-/
 /-begrijp var hier niet vragen nog, zit ook error in-/
 /-  | var A1, x, B => if x == A1 then B else var A1 was verkeerd, moest y zijn-/
-def substitution : PropForm -> String -> PropForm -> PropForm
-  | tr, _, _ => tr
-  | fls, _, _ => fls
-  | var A1, x, B => if x == A1 then B else var A1
-  | neg A1, x, B => neg (substitution A1 x B)
-  | conj A1 A2, x, B => conj (substitution A1 x B) (substitution A2 x B)
-  | disj A1 A2, x, B => disj (substitution A1 x B) (substitution A2 x B)
-  | impl A1 A2, x, B => impl (substitution A1 x B) (substitution A2 x B)
-  | biImpl A1 A2, x, B => biImpl (substitution A1 x B) (substitution A2 x B)
+def substitution (t : String) (D : PropForm) : PropForm → PropForm
+  | tr => tr
+  | fls => fls
+  | var s => if s == t then D else var s
+  | neg A => neg (substitution t D A)
+  | conj A B => conj (substitution t D A) (substitution t D B)
+  | disj A B => disj (substitution t D A) (substitution t D B)
+  | impl A B => impl (substitution t D A) (substitution t D B)
+  | biImpl A B=> biImpl (substitution t D A) (substitution t D B)
+
+#eval substitution "p" (var "q") (var "p") == var "q"
+#eval substitution "p" (var "q") tr == tr
+#eval substitution "k" (var "l") (conj (var "k") (var "m")) == conj (var "l") (var "m")

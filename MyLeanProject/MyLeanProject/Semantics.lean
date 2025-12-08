@@ -51,7 +51,6 @@ notation "⊨" A => PropForm.isValid A
 notation A "AND" B => PropForm.conj A B
 #eval var "p" AND var "q"
 
-theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by sorry
 
 def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 
@@ -60,3 +59,36 @@ def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 #eval truthTable propExample
 #eval propExample.isValid
 #eval propExample.isSat
+
+
+
+/-cases checkt alle mogelijkheden, volgens tactics boek-/
+/-<;> zorgt ervoor dat rfl op beide onderdelen wordt toegepast-/
+/-simp[auxiliary, PropForm.eval] =  aan de linkerkant wordt de auxiliary geevalueerd, aan de rechterkant de negatie hiervan -/
+/- rw = rewrite -/
+theorem auxiliary (A : PropForm) : (v : PropAssignment) (auxiliary A).eval v = (neg A).eval v := by
+  | tr => simp[auxiliary, PropForm.eval] rfl
+  | fls => simp[auxiliary,PropForm.eval] rfl
+  | var s => simp[auxiliary,PropForm.eval] rfl
+  | neg A t => simp[auxiliary, PropForm.eval]
+              rw [t]
+              simp[PropForm.eval]
+              cases A.eval v <;> rfl
+  | conj A1 A2 t1 t2 => simp[auxiliary, PropForm.eval]
+              rw [t1, t2]
+              simp[PropForm.eval]
+              cases A1.eval v <;> cases A2.eval v <;> rfl
+  | disj A1 A2 t1 t2 => simp[auxiliary, PropForm.eval]
+              rw [t1, t2]
+              simp[PropForm.eval]
+              cases A1.eval v <;> cases A2.eval v <;> rfl
+  | impl A1 A2 t1 t2 => simp[auxiliary, PropForm.eval]
+              rw[t1, t2]
+              simp[PropForm.eval]
+              cases A1.eval v <;> cases A2.eval v <;> rfl
+  |biImpl A1 A2 t1 t2 => simp[auxiliary, PropForm.eval]
+              rw[t1, t2]
+              simp[PropForm.eval]
+              cases A1.eval v <;> cases A2.eval v <;> rfl
+
+theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by sorry
