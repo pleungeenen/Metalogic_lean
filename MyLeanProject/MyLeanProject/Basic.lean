@@ -147,12 +147,13 @@ def auxiliary : PropForm -> PropForm
 
 /-PropForm1 = formule, String = variable, PropForm2 = vervanging en PropForm3 = resultaat-/
 /-begrijp var hier niet vragen nog, zit ook error in-/
+/-  | var A1, x, B => if x == A1 then B else var A1 was verkeerd, moest y zijn-/
 def substitution : PropForm -> String -> PropForm -> PropForm
-  | tr => tr
-  | fls => fls
-  | var A1, x, B => A1 = x gives var B
+  | tr, _, _ => tr
+  | fls, _, _ => fls
+  | var A1, x, B => if x == A1 then B else var A1
   | neg A1, x, B => neg (substitution A1 x B)
   | conj A1 A2, x, B => conj (substitution A1 x B) (substitution A2 x B)
   | disj A1 A2, x, B => disj (substitution A1 x B) (substitution A2 x B)
   | impl A1 A2, x, B => impl (substitution A1 x B) (substitution A2 x B)
-  | biImpl A1 A2 x B => (substitution A1 x B) (substitution A2 x B)
+  | biImpl A1 A2, x, B => biImpl (substitution A1 x B) (substitution A2 x B)
