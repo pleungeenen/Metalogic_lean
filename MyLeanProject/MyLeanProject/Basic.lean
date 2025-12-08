@@ -145,9 +145,6 @@ def auxiliary : PropForm -> PropForm
   | impl A B => impl (auxiliary A) (auxiliary B)
   | biImpl A B => biImpl (auxiliary A) (auxiliary B)
 
-/-PropForm1 = formule, String = variable, PropForm2 = vervanging en PropForm3 = resultaat-/
-/-begrijp var hier niet vragen nog, zit ook error in-/
-/-  | var A1, x, B => if x == A1 then B else var A1 was verkeerd, moest y zijn-/
 def substitution (t : String) (D : PropForm) : PropForm → PropForm
   | tr => tr
   | fls => fls
