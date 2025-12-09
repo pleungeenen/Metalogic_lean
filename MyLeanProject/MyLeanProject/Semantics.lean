@@ -65,12 +65,12 @@ def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 
 
 
-/-cases checkt alle mogelijkheden, volgens tactics boek-/
+/-cases checkt alle mogelijkheden, volgens tactics hfst in boek-/
 /-<;> zorgt ervoor dat rfl op beide onderdelen wordt toegepast-/
 /-simp[auxiliary, PropForm.eval] =  aan de linkerkant wordt de auxiliary geevalueerd, aan de rechterkant de negatie hiervan -/
 /- rw = rewrite -/
 /-zit een error in?-/
-theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).eval v = (neg A).eval v := by
+theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).eval v = (neg A).eval v := by induction
   | tr => simp[auxiliary, PropForm.eval] rfl
   | fls => simp[auxiliary,PropForm.eval] rfl
   | var s => simp[auxiliary,PropForm.eval] rfl
@@ -96,6 +96,18 @@ theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).ev
               cases A1.eval v <;> cases A2.eval v <;> rfl
 
 /--dit nog uitwerken-/
-theorem substitution_theorem (A B C : PropForm) (t : String) : (⊨ (biImpl A B)) -> (⊨ (biImpl (substitution t A C) (substitution t B C))) := by sorry
+/-intro is introduceren van iets nieuws.-/
+theorem substitution_theorem (A B C : PropForm) (t : String) : (⊨ (biImpl A B)) -> (⊨ (biImpl (substitution t A C) (substitution t B C))) := by
+intro h
+induction
+ | tr => simp[substitution] rfl
+ | fls => simp[substitution] rfl
+ | var s => simp[substitution] rfl
+ | neg A t => simp[substitution]
+ | conj A1 A2 t1 t2 => sorry
+ | disj A1 A2 t1 t2 =>  sorry
+ | impl A1 A2 t1 t2 => sorry
+ | biImpl A1 A2 t1 t2 => sorry
+
 
 theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by sorry

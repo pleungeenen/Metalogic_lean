@@ -106,6 +106,7 @@ def propExample2 := prop!{p ∧ (q → r)}
 
 def hello : String := "propositional logic"
 
+
 /-test-/
 def duality : PropForm -> PropForm
   | tr => fls
@@ -158,3 +159,4 @@ def substitution (t : String) (D : PropForm) : PropForm → PropForm
 #eval substitution "p" (var "q") (var "p") == var "q"
 #eval substitution "p" (var "q") tr == tr
 #eval substitution "k" (var "l") (conj (var "k") (var "m")) == conj (var "l") (var "m")
+#eval (substitution "p" (var "q") (neg (var "r")))
