@@ -97,6 +97,7 @@ theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).ev
 
 /--dit nog uitwerken-/
 /-intro is introduceren van iets nieuws.-/
+/-bij var ook 2 cases?-/
 theorem substitution_theorem (A B C : PropForm) (t : String) : (⊨ (biImpl A B)) -> (⊨ (biImpl (substitution t A C) (substitution t B C))) := by
 intro h
 induction
