@@ -26,6 +26,16 @@ def PropForm.eval (v : PropAssignment) : PropForm → Bool
   | impl A B => !(eval v A) || (eval v B)
   | biImpl A B => (!(eval v A) || (eval v B)) && (!(eval v B) || (eval v A))
 
+@[simp]
+theorem negation_evaluation (v : PropAssignment) (A : PropForm) :
+  eval v (neg A) = !(eval v A) := by
+  rfl
+
+@[simp]
+theorem conjunction_evaluation (v : PropAssignment) (A B : PropForm) :
+  (eval v (conj A B)) = ((eval v A) && (eval v B)) := by
+  rfl
+
 def allSublists : List α → List (List α)
   | [] => [[]]
   | (a :: as) =>
@@ -55,6 +65,18 @@ notation A "OR" B => PropForm.disj A B
 #eval var "p" OR var "q"
 
 
+theorem reflexive_biImpl (A : PropForm) : ⊨ biImpl A A := by
+ simp [PropForm.isValid]
+ intro a
+ by_contra h
+ /-truthtable-/
+
+ theorem negation_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨ biImpl (neg A) (neg B))
+ theorem conjunction_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (conj A1 A2) (conj B1 B2))
+ theorem disjunction_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (conj A1 A2) (conj B1 B2))
+ theorem implication_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (impl A1 A2) (impl B1 B2))
+ theorem biimplication_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (biImpl A1 A2) (biImpl B1 B2))
+
 def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 
 #eval propExample.eval testAssignment
@@ -69,46 +91,63 @@ def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 /-<;> zorgt ervoor dat rfl op beide onderdelen wordt toegepast-/
 /-simp[auxiliary, PropForm.eval] =  aan de linkerkant wordt de auxiliary geevalueerd, aan de rechterkant de negatie hiervan -/
 /- rw = rewrite -/
-/-zit een error in?-/
-theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).eval v = (neg A).eval v := by induction
-  | tr => simp[auxiliary, PropForm.eval] rfl
-  | fls => simp[auxiliary,PropForm.eval] rfl
-  | var s => simp[auxiliary,PropForm.eval] rfl
-  | neg A t => simp[auxiliary, PropForm.eval]
-              rw [t]
-              simp[PropForm.eval]
-              cases A.eval v <;> rfl
-  | conj A1 A2 t1 t2 => simp[auxiliary, PropForm.eval]
-              rw [t1, t2]
-              simp[PropForm.eval]
-              cases A1.eval v <;> cases A2.eval v <;> rfl
-  | disj A1 A2 t1 t2 => simp[auxiliary, PropForm.eval]
-              rw [t1, t2]
-              simp[PropForm.eval]
-              cases A1.eval v <;> cases A2.eval v <;> rfl
-  | impl A1 A2 t1 t2 => simp[auxiliary, PropForm.eval]
-              rw[t1, t2]
-              simp[PropForm.eval]
-              cases A1.eval v <;> cases A2.eval v <;> rfl
-  |biImpl A1 A2 t1 t2 => simp[auxiliary, PropForm.eval]
-              rw[t1, t2]
-              simp[PropForm.eval]
-              cases A1.eval v <;> cases A2.eval v <;> rfl
+theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).eval v = (neg A).eval v := by
+  induction A with
+    | tr
+    | fls
+    | var s =>
+      simp[auxiliary, PropForm.eval]
+    | neg A ih =>
+      simp[auxiliary, PropForm.eval]
+      rw[ih]
+      simp
+    | conj A1 A2 ih1 ih2 =>
+      simp[auxiliary, PropForm.eval]
+      rw[ih1, ih2]
+      simp
+    | disj A1 A2 ih1 ih2 =>
+      simp[auxiliary, PropForm.eval]
+      rw[ih1, ih2]
+      simp
+    | impl A1 A2 ih1 ih2 =>
+      simp[auxiliary, PropForm.eval]
+      rw[ih1, ih2]
+      simp
+    | biImpl A1 A2 ih1 ih2 =>
+      simp[auxiliary, PropForm.eval]
+      rw[ih1, ih2]
+      simp
+
 
 /--dit nog uitwerken-/
 /-intro is introduceren van iets nieuws.-/
 /-bij var ook 2 cases?-/
-theorem substitution_theorem (A B C : PropForm) (t : String) : (⊨ (biImpl A B)) -> (⊨ (biImpl (substitution t A C) (substitution t B C))) := by
+theorem substitution_theorem (A B C : PropForm) (t : String) :
+(⊨ (biImpl A B)) -> (⊨ (biImpl (substitution t A C) (substitution t B C))) := by
 intro h
-induction
- | tr => simp[substitution] rfl
- | fls => simp[substitution] rfl
- | var s => simp[substitution] rfl
- | neg A t => simp[substitution]
- | conj A1 A2 t1 t2 => sorry
- | disj A1 A2 t1 t2 =>  sorry
- | impl A1 A2 t1 t2 => sorry
- | biImpl A1 A2 t1 t2 => sorry
+induction C with
+ | tr =>
+    simp[substitution]
+    apply reflexive_biImpl tr
+ | fls =>
+   simp[substitution]
+   apply reflexive_biImpl fls
+ | var s => sorry
+ | neg A t =>
+   simp[substitution]
+   apply negation_biImpl
+ | conj A1 A2 t1 t2 =>
+   simp[substitution]
+   apply conjunction_biImpl
+ | disj A1 A2 t1 t2 =>
+   simp[substitution]
+   apply disjunction_biImpl
+ | impl A1 A2 t1 t2 =>
+   simp[substitution]
+   apply implication_biImpl
+ | biImpl A1 A2 t1 t2 =>
+   simp[substitution]
+   apply biimplication_biImpl
 
 
 theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by sorry

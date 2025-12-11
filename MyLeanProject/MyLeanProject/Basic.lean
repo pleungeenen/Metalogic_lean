@@ -10,6 +10,8 @@ inductive PropForm where
   | biImpl : PropForm → PropForm → PropForm
   deriving DecidableEq
 
+notation "¬'" ϕ => PropForm.neg ϕ
+
 open PropForm
 
 def example1 := impl (conj (var "p") (var "q")) (var "r")
@@ -143,8 +145,8 @@ def auxiliary : PropForm -> PropForm
   | neg A => neg (auxiliary A)
   | conj A B => disj (auxiliary A) (auxiliary B)
   | disj A B => conj (auxiliary A) (auxiliary B)
-  | impl A B => impl (auxiliary A) (auxiliary B)
-  | biImpl A B => biImpl (auxiliary A) (auxiliary B)
+  | impl A B => conj (neg (auxiliary A)) (auxiliary B)
+  | biImpl A B => disj (conj (neg (auxiliary A)) (auxiliary B)) (conj (neg (auxiliary B)) (auxiliary A))
 
 def substitution (t : String) (D : PropForm) : PropForm → PropForm
   | tr => tr
