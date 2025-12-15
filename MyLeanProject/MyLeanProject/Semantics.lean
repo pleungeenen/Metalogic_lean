@@ -1,4 +1,6 @@
 import MyLeanProject.Basic
+import Mathlib
+
 
 open PropForm
 
@@ -64,18 +66,33 @@ notation A "AND" B => PropForm.conj A B
 notation A "OR" B => PropForm.disj A B
 #eval var "p" OR var "q"
 
+/-llemma's-/
 
-theorem reflexive_biImpl (A : PropForm) : ⊨ biImpl A A := by
+lemma reflexive_biImpl (A : PropForm) : ⊨ biImpl A A := by
  simp [PropForm.isValid]
  intro a
  by_contra h
- /-truthtable-/
+ simp [truthTable, PropForm.eval] at h
 
- theorem negation_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨ biImpl (neg A) (neg B))
- theorem conjunction_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (conj A1 A2) (conj B1 B2))
- theorem disjunction_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (conj A1 A2) (conj B1 B2))
- theorem implication_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (impl A1 A2) (impl B1 B2))
- theorem biimplication_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (biImpl A1 A2) (biImpl B1 B2))
+ lemma negation_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨ biImpl (neg A) (neg B)) := by
+ intro h
+ simp [PropForm.isValid, truthTable, PropForm.eval] at h
+ simp [PropForm.isValid, truthTable, PropForm.eval]
+ intro x
+ sorry
+
+
+ lemma conjunction_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (conj A1 A2) (conj B1 B2)) := by
+   intro h1
+   intro h2
+   simp [PropForm.isValid, truthTable, PropForm.eval] at h1
+   simp [PropForm.isValid, truthTable, PropForm.eval] at h2
+   simp [PropForm.isValid, truthTable, PropForm.eval]
+   intro x
+   sorry
+ lemma disjunction_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (disj A1 A2) (disj B1 B2)) := sorry
+ lemma implication_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (impl A1 A2) (impl B1 B2)) := sorry
+ lemma biimplication_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (biImpl A1 A2) (biImpl B1 B2)) := sorry
 
 def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 
@@ -119,9 +136,10 @@ theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).ev
       simp
 
 
-/--dit nog uitwerken-/
+
 /-intro is introduceren van iets nieuws.-/
 /-bij var ook 2 cases?-/
+/-exact bewijs het voor de goal-/
 theorem substitution_theorem (A B C : PropForm) (t : String) :
 (⊨ (biImpl A B)) -> (⊨ (biImpl (substitution t A C) (substitution t B C))) := by
 intro h
@@ -132,22 +150,32 @@ induction C with
  | fls =>
    simp[substitution]
    apply reflexive_biImpl fls
- | var s => sorry
- | neg A t =>
+ | var s =>
+   simp[substitution]
+   sorry
+ | neg A ih =>
    simp[substitution]
    apply negation_biImpl
- | conj A1 A2 t1 t2 =>
+   exact ih
+ | conj A1 A2 ih1 ih2 =>
    simp[substitution]
    apply conjunction_biImpl
- | disj A1 A2 t1 t2 =>
+   exact ih1
+   exact ih2
+ | disj A1 A2 ih1 ih2 =>
    simp[substitution]
    apply disjunction_biImpl
- | impl A1 A2 t1 t2 =>
+   exact ih1
+   exact ih2
+ | impl A1 A2 ih1 ih2 =>
    simp[substitution]
    apply implication_biImpl
- | biImpl A1 A2 t1 t2 =>
+   exact ih1
+   exact ih2
+ | biImpl A1 A2 ih1 ih2 =>
    simp[substitution]
    apply biimplication_biImpl
-
+   exact ih1
+   exact ih2
 
 theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by sorry
