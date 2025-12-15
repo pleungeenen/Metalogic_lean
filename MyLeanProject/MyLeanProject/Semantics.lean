@@ -178,4 +178,11 @@ induction C with
    exact ih1
    exact ih2
 
-theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by sorry
+/-twee cases, -> en <-?-/
+theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by
+  constructor
+  intro h
+  /-moet met auxiliary + substitution-/
+  /-auxiliary maakt van A negatie A-/
+  /-auxiliary A = auxiliary B-/
+  /-substitution theorem-/
