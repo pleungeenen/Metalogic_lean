@@ -1,4 +1,4 @@
-
+import Mathlib.Tactic
 inductive PropForm where
   | tr     : PropForm
   | fls    : PropForm
@@ -78,6 +78,10 @@ def vars : PropForm → List String
   | impl A B => List.unionStr (vars A) (vars B)
   | biImpl A B => List.unionStr (vars A) (vars B)
 
+@[simp]
+lemma biImpl_var_simp (A B : PropForm) :
+     vars (biImpl (neg A) (neg B)) = vars (biImpl A B) := by
+      simp[vars]
 
 def toString : PropForm → String
   | tr => "⊤"

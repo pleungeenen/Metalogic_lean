@@ -1,5 +1,5 @@
 import MyLeanProject.Basic
-import Mathlib
+import Mathlib.Tactic
 
 
 open PropForm
@@ -74,12 +74,30 @@ lemma reflexive_biImpl (A : PropForm) : ⊨ biImpl A A := by
  by_contra h
  simp [truthTable, PropForm.eval] at h
 
- lemma negation_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨ biImpl (neg A) (neg B)) := by
- intro h
- simp [PropForm.isValid, truthTable, PropForm.eval] at h
- simp [PropForm.isValid, truthTable, PropForm.eval]
- intro x
- sorry
+lemma negation_congruence (A B : PropForm) (v : PropAssignment) :
+    (biImpl A B).eval v = (biImpl (neg A) (neg B)).eval v := by
+      simp [PropForm.eval]
+      grind
+
+ lemma negation_biImpl (A B : PropForm) (h : ⊨ biImpl A B) :
+    (⊨ biImpl (neg A) (neg B)) := by
+  simp [PropForm.isValid]
+  simp [PropForm.isValid] at h
+  intro a
+  specialize h a
+  simp [truthTable] at h
+  simp [truthTable]
+  -- rw [negation_congruence A B]
+  intro x g
+  specialize h x
+  intro j
+  simp[PropAssignment.mk] at h
+  simp[PropAssignment.mk]
+  have auxiliary : List.map (PropAssignment.eval (List.map (fun x => (x, true)) x)) (A.biImpl B).vars = a →
+    eval (List.map (fun x => (x, true)) x) (A.biImpl B) = true := by
+      apply h g
+  rw[←negation_congruence]
+  apply auxiliary j
 
 
  lemma conjunction_biImpl (A1 A2 B1 B2 : PropForm) : (⊨ biImpl A1 B1) -> (⊨ biImpl A2 B2) -> (⊨ biImpl (conj A1 A2) (conj B1 B2)) := by
@@ -151,8 +169,13 @@ induction C with
    simp[substitution]
    apply reflexive_biImpl fls
  | var s =>
-   simp[substitution]
-   sorry
+   by_cases g : s = t
+   · simp[substitution]
+     simp[g]
+     exact h
+   · simp[substitution]
+     simp[g]
+     apply reflexive_biImpl (var s)
  | neg A ih =>
    simp[substitution]
    apply negation_biImpl
