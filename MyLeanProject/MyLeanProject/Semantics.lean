@@ -28,6 +28,9 @@ def PropForm.eval (v : PropAssignment) : PropForm → Bool
   | impl A B => !(eval v A) || (eval v B)
   | biImpl A B => (!(eval v A) || (eval v B)) && (!(eval v B) || (eval v A))
 
+
+
+
 @[simp]
 theorem negation_evaluation (v : PropAssignment) (A : PropForm) :
   eval v (neg A) = !(eval v A) := by
@@ -123,8 +126,18 @@ lemma biimplication_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
   apply auxiliary j
 
 
+
 lemma conjunction_biImpl (A1 A2 B1 B2 : PropForm) (h1 : ⊨ biImpl A1 B1) (h2 : ⊨ biImpl A2 B2) :
-  ⊨ biImpl (conj A1 A2) (conj B1 B2) := by sorry
+  ⊨ biImpl (conj A1 A2) (conj B1 B2) := by
+  simp [PropForm.isValid, truthTable]
+  intro a
+  let v := PropAssignment.mk (a.map (fun x => (x, true)))
+  have eval1 : (A1.biImpl B1).eval v = true := by
+    sorry
+  have eval2 : (A2.biImpl B2).eval v = true := by
+    sorry
+  simp [PropForm.eval]
+  sorry
 
 lemma disjunction_biImpl (A1 A2 B1 B2 : PropForm)
   (h1 : ⊨ biImpl A1 B1) (h2 : ⊨ biImpl A2 B2) :
@@ -230,12 +243,37 @@ induction C with
    exact ih1
    exact ih2
 
+/-de 2 var lemma's zeggen dat variabelen niet veranderen
+bij toepassen van auxiliary of duality2-/
+lemma auxiliary_variable (A : PropForm) : (auxiliary A).vars = A.vars := by
+  sorry
+
+lemma duality_variable (A : PropForm) : (duality2 A).vars = A.vars := by
+  sorry
+
+/-A <-> B dan ook auxiliary A <-> auxiliary B-/
+lemma duality_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨biImpl (auxiliary A) (auxiliary B)) := by
+  sorry
+
+
+/-2 x duality toepassen = origineel-/
+lemma duality_involutory (A : PropForm) (v : PropAssignment) :
+    (duality2 (duality2 A)).eval v = A.eval v := by
+  induction A with
+  | tr => rfl
+  | fls => rfl
+  | var s => rfl
+  | neg A ih => simp [duality2, ih]
+  | conj A1 A2 ih1 ih2 => simp [duality2, ih1, ih2]
+  | disj A1 A2 ih1 ih2 => simp [duality2, PropForm.eval, ih1, ih2]
+  | impl A1 A2 ih1 ih2 => simp [duality2, PropForm.eval, ih1, ih2]
+  | biImpl A1 A2 ih1 ih2 => simp [duality2, PropForm.eval, ih1, ih2]
+
 /-ik heb nog een andere substitution nodig denk ik? als ik het volgens het boek wil doen-/
 /-twee cases, -> en <-?-/
 theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by
-  simp [PropForm.isValid, truthTable, PropForm.eval, duality2]
-  sorry
-  /-moet met auxiliary + substitution-/
-  /-auxiliary maakt van A negatie A-/
-  /-auxiliary A = auxiliary B-/
-  /-substitution theorem-/
+  constructor
+  · intro h
+    sorry
+  · intro h
+    sorry
