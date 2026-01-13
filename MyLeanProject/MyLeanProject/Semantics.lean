@@ -83,15 +83,19 @@ lemma negation_congruence (A B : PropForm) (v : PropAssignment) :
       grind
 
 lemma conjunction_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
-  (biImpl (conj A1 A2) (conj B1 B2)).eval v =
-  ((biImpl A1 B1).eval v && (biImpl A2 B2).eval v) := by
+  ((biImpl A1 B1).eval v && (biImpl A2 B2).eval v) = true → (biImpl (conj A1 A2) (conj B1 B2)).eval v = true:= by
   simp [PropForm.eval]
-  sorry
+  grind
 
 lemma disjunction_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
+  ((biImpl A1 B1).eval v && (biImpl A2 B2).eval v) = true → (biImpl (disj A1 A2) (disj B1 B2)).eval v = true:= by
+  simp [PropForm.eval]
+  grind
+
+/-lemma disjunction_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
   (biImpl A1 B1).eval v = (biImpl (disj A1 A2) (disj B1 B2)).eval v := by
   simp [PropForm.eval]
-  sorry
+  sorry-/
 
 lemma implication_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
   (biImpl A1 B1).eval v = (biImpl (impl A1 A2) (impl B1 B2)).eval v := by
@@ -102,7 +106,6 @@ lemma biimplication_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
   (biImpl A1 B1).eval v = (biImpl (biImpl A1 A2) (biImpl B1 B2)).eval v := by
   simp [PropForm.eval]
   sorry
-
 
 
  lemma negation_biImpl (A B : PropForm) (h : ⊨ biImpl A B) :
@@ -124,8 +127,6 @@ lemma biimplication_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
       apply h g
   rw[←negation_congruence]
   apply auxiliary j
-
-
 
 lemma conjunction_biImpl (A1 A2 B1 B2 : PropForm) (h1 : ⊨ biImpl A1 B1) (h2 : ⊨ biImpl A2 B2) :
   ⊨ biImpl (conj A1 A2) (conj B1 B2) := by
@@ -252,7 +253,7 @@ lemma duality_variable (A : PropForm) : (duality2 A).vars = A.vars := by
   sorry
 
 /-A <-> B dan ook auxiliary A <-> auxiliary B-/
-lemma duality_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨biImpl (auxiliary A) (auxiliary B)) := by
+lemma auxiliary_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨biImpl (auxiliary A) (auxiliary B)) := by
   sorry
 
 
@@ -269,11 +270,18 @@ lemma duality_involutory (A : PropForm) (v : PropAssignment) :
   | impl A1 A2 ih1 ih2 => simp [duality2, PropForm.eval, ih1, ih2]
   | biImpl A1 A2 ih1 ih2 => simp [duality2, PropForm.eval, ih1, ih2]
 
+lemma duality2_biImpl (A B : PropForm) : (⊨ biImpl A B) → (⊨ biImpl (duality2 A) (duality2 B)) := by
+  intro h
+  sorry
+
+lemma duality2_biImpl_reversed (A B : PropForm) : (⊨ biImpl (duality2 A) (duality2 B)) → (⊨ biImpl A B) := by
+  sorry
+
 /-ik heb nog een andere substitution nodig denk ik? als ik het volgens het boek wil doen-/
 /-twee cases, -> en <-?-/
 theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by
   constructor
   · intro h
-    sorry
+    exact duality2_biImpl A B h
   · intro h
-    sorry
+    exact duality2_biImpl_reversed A B h
