@@ -162,6 +162,18 @@ def substitution (t : String) (D : PropForm) : PropForm → PropForm
   | impl A B => impl (substitution t D A) (substitution t D B)
   | biImpl A B=> biImpl (substitution t D A) (substitution t D B)
 
+def simultaneous_substitution (_list : List (String × PropForm)) : PropForm → PropForm
+| tr => tr
+| fls => fls
+| var s => match _list.lookup s with
+            | some A => A
+            | none => var s
+| neg A => neg (simultaneous_substitution _list A)
+| conj A B => conj (simultaneous_substitution _list A) (simultaneous_substitution _list B)
+| disj A B => disj (simultaneous_substitution _list A) (simultaneous_substitution _list B)
+| impl A B => impl (simultaneous_substitution _list A) (simultaneous_substitution _list B)
+| biImpl A B=> biImpl (simultaneous_substitution _list A) (simultaneous_substitution _list B)
+
 #eval substitution "p" (var "q") (var "p") == var "q"
 #eval substitution "p" (var "q") tr == tr
 #eval substitution "k" (var "l") (conj (var "k") (var "m")) == conj (var "l") (var "m")

@@ -29,7 +29,8 @@ def PropForm.eval (v : PropAssignment) : PropForm → Bool
   | biImpl A B => (!(eval v A) || (eval v B)) && (!(eval v B) || (eval v A))
 
 
-
+def example2 := biImpl (disj (var "p") (var "k")) (var "r")
+#eval example2
 
 @[simp]
 theorem negation_evaluation (v : PropAssignment) (A : PropForm) :
@@ -169,6 +170,7 @@ def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 /-<;> zorgt ervoor dat rfl op beide onderdelen wordt toegepast-/
 /-simp[auxiliary, PropForm.eval] =  aan de linkerkant wordt de auxiliary geevalueerd, aan de rechterkant de negatie hiervan -/
 /- rw = rewrite -/
+/-2.3.11-/
 theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).eval v = (neg A).eval v := by
   induction A with
     | tr
@@ -255,7 +257,51 @@ lemma duality_variable (A : PropForm) : (duality2 A).vars = A.vars := by
 /-A <-> B dan ook auxiliary A <-> auxiliary B-/
 lemma auxiliary_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨biImpl (auxiliary A) (auxiliary B)) := by
   sorry
+/-deze 3 niet meer nodig denk ik^^^-/
 
+
+/-auxiliary verandert true in false en andersom-/
+@[simp]
+lemma aux_tr : auxiliary tr = fls := rfl
+
+@[simp]
+lemma aux_fls : auxiliary fls = tr := rfl
+
+/-hoe moet deze eerste?-/
+@[simp]
+lemma vars_biImpl (A B : PropForm) : (biImpl A B).vars = A.vars && B.vars := by
+sorry
+
+/-ze zeggen allemaal dat de variabelen hetzelfde blijven bij omzetting-/
+@[simp]
+lemma vars_negation (A : PropForm) : (neg A).vars = A.vars := rfl
+
+@[simp]
+lemma vars_auxiliary (A : PropForm) : (auxiliary A).vars = A.vars := by
+  sorry
+
+@[simp]
+lemma vars_duality2 (A : PropForm) : (duality2 A).vars = A.vars := by
+  sorry
+
+/-φ∗ = φd [¬p0, . . . , ¬pn/p0, . . . , pn]-/
+lemma auxiliary_lemma (A : PropForm) :
+    auxiliary A = simultaneous_substitution (A.vars.map (fun s => (s, neg (var s)))) (duality2 A) := by
+    sorry
+
+/-2.3.12 moet opnieuw, niet met gewone auxiliary vanwege ⊨ teken-/
+lemma auxiliary2 (A : PropForm) : ⊨ biImpl (auxiliary A) (neg A) := by
+sorry
+
+/-theorem van simultaneous substitution-/
+theorem simultaneous_substitution_theorem (A B : PropForm) (s : List (String × PropForm)) :
+  (⊨ biImpl A B) → (⊨ biImpl (simultaneous_substitution s A) (simultaneous_substitution s B)) := by
+  sorry
+
+/-φ∗[¬p0,...,¬pn/p0,...,pn] = φd[¬¬p0,...,¬¬pn/p0,...,pn] uit van dalen boek-/
+lemma auxiliary_dualitynegation (A : PropForm) : simultaneous_substitution (A.vars.map (fun s => (s, neg (var s)))) (auxiliary A) =
+    simultaneous_substitution (A.vars.map (fun s => (s, neg (neg (var s))))) (duality2 A) := by
+  sorry
 
 /-2 x duality toepassen = origineel-/
 lemma duality_involutory (A : PropForm) (v : PropAssignment) :
@@ -272,16 +318,32 @@ lemma duality_involutory (A : PropForm) (v : PropAssignment) :
 
 lemma duality2_biImpl (A B : PropForm) : (⊨ biImpl A B) → (⊨ biImpl (duality2 A) (duality2 B)) := by
   intro h
+  simp [PropForm.isValid] at *
+  intro a
   sorry
 
 lemma duality2_biImpl_reversed (A B : PropForm) : (⊨ biImpl (duality2 A) (duality2 B)) → (⊨ biImpl A B) := by
   sorry
 
+theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by
+  constructor
+  intro h
+  /-de volgorde moet zo denk ik maar ik weet niet precies hoe ik het moet toepassen:
+  negation_biImpl
+  auxiliary2
+  simultaneous_substitution
+  auxiliary_dualitynegation
+  duality_involutory-/
+  sorry
+
+
+
 /-ik heb nog een andere substitution nodig denk ik? als ik het volgens het boek wil doen-/
 /-twee cases, -> en <-?-/
-theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by
+/-theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by
   constructor
   · intro h
     exact duality2_biImpl A B h
   · intro h
     exact duality2_biImpl_reversed A B h
+-/
