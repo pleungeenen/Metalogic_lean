@@ -62,7 +62,7 @@ notation A "OR" B => PropForm.disj A B
 #eval var "p" OR var "q"
 
 
-/-@[simp] + lemma's-/
+/-@[simp] + lemma's:-/
 @[simp]
 theorem negation_evaluation (v : PropAssignment) (A : PropForm) :
   eval v (neg A) = !(eval v A) := by
@@ -376,7 +376,7 @@ lemma duality_biImpl_reversed (A B : PropForm) : (⊨ biImpl (duality2 A) (duali
   exact biImpl_connection A (duality2 (duality2 B)) B step5 step3
 
 
-/-twee cases, -> en <-?-/
+/-twee cases, -> en <--/
 theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by
   constructor
   · intro h
