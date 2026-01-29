@@ -1,7 +1,6 @@
 import metalogica_lean_project.metalogica_functions
-
 open PropForm
-
+/-unused-/
 inductive Lit where
   | tr  : Lit
   | fls : Lit
