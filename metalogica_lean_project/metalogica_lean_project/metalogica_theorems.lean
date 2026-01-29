@@ -32,15 +32,6 @@ def PropForm.eval (v : PropAssignment) : PropForm → Bool
 def example2 := biImpl (disj (var "p") (var "k")) (var "r")
 #eval example2
 
-@[simp]
-theorem negation_evaluation (v : PropAssignment) (A : PropForm) :
-  eval v (neg A) = !(eval v A) := by
-  rfl
-
-@[simp]
-theorem conjunction_evaluation (v : PropAssignment) (A B : PropForm) :
-  (eval v (conj A B)) = ((eval v A) && (eval v B)) := by
-  rfl
 
 def allSublists : List α → List (List α)
   | [] => [[]]
@@ -70,7 +61,17 @@ notation A "AND" B => PropForm.conj A B
 notation A "OR" B => PropForm.disj A B
 #eval var "p" OR var "q"
 
-/-llemma's-/
+
+/-@[simp] + lemma's-/
+@[simp]
+theorem negation_evaluation (v : PropAssignment) (A : PropForm) :
+  eval v (neg A) = !(eval v A) := by
+  rfl
+
+@[simp]
+theorem conjunction_evaluation (v : PropAssignment) (A B : PropForm) :
+  (eval v (conj A B)) = ((eval v A) && (eval v B)) := by
+  rfl
 
 lemma reflexive_biImpl (A : PropForm) : ⊨ biImpl A A := by
  simp [PropForm.isValid]
@@ -93,11 +94,6 @@ lemma disjunction_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
   simp [PropForm.eval]
   grind
 
-/-lemma disjunction_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
-  (biImpl A1 B1).eval v = (biImpl (disj A1 A2) (disj B1 B2)).eval v := by
-  simp [PropForm.eval]
-  sorry-/
-
 lemma implication_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
   (biImpl A1 B1).eval v = (biImpl (impl A1 A2) (impl B1 B2)).eval v := by
   simp [PropForm.eval]
@@ -117,7 +113,6 @@ lemma biimplication_congruence (A1 A2 B1 B2 : PropForm) (v : PropAssignment) :
   specialize h a
   simp [truthTable] at h
   simp [truthTable]
-  -- rw [negation_congruence A B]
   intro x g
   specialize h x
   intro j
@@ -166,9 +161,6 @@ def testAssignment := PropAssignment.mk [("p", true), ("q", true), ("r", true)]
 
 
 
-/-cases checkt alle mogelijkheden, volgens tactics hfst in boek-/
-/-<;> zorgt ervoor dat rfl op beide onderdelen wordt toegepast-/
-/-simp[auxiliary, PropForm.eval] =  aan de linkerkant wordt de auxiliary geevalueerd, aan de rechterkant de negatie hiervan -/
 /- rw = rewrite -/
 /-2.3.11-/
 theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).eval v = (neg A).eval v := by
@@ -201,7 +193,7 @@ theorem auxiliary_theorem (A : PropForm) (v : PropAssignment) : (auxiliary A).ev
 
 
 /-intro is introduceren van iets nieuws.-/
-/-bij var ook 2 cases?-/
+/-bij var ook 2 cases-/
 /-exact bewijs het voor de goal-/
 theorem substitution_theorem (A B C : PropForm) (t : String) :
 (⊨ (biImpl A B)) -> (⊨ (biImpl (substitution t A C) (substitution t B C))) := by
@@ -246,6 +238,7 @@ induction C with
    exact ih1
    exact ih2
 
+/-@[simp] + lemma's-/
 /-A <-> B dan ook auxiliary A <-> auxiliary B-/
 lemma auxiliary_biImpl (A B : PropForm) : (⊨ biImpl A B) -> (⊨biImpl (auxiliary A) (auxiliary B)) := by
   sorry
@@ -319,6 +312,7 @@ lemma duality_involutory (A : PropForm) (v : PropAssignment) :
   | impl A1 A2 ih1 ih2 => simp [duality2, PropForm.eval, ih1, ih2]
   | biImpl A1 A2 ih1 ih2 => simp [duality2, PropForm.eval, ih1, ih2]
 
+/-lemma's voor duality:-/
 /-als A<-> B en B<-> C dan A<->C-/
 lemma biImpl_connection (A B C : PropForm) :
     (⊨ biImpl A B) → (⊨ biImpl B C) → (⊨ biImpl A C) := by
@@ -332,7 +326,6 @@ lemma duality_involutory_valid (A : PropForm) :
     ⊨ biImpl (duality2 (duality2 A)) A := by
   sorry
 
-  /-hier moeten nog de substitution stappen bij-/
 lemma auxiliary_to_duality (A B : PropForm) :
     (⊨ biImpl (auxiliary A) (auxiliary B)) → (⊨ biImpl (duality2 A) (duality2 B)) := by
     intro h
@@ -382,7 +375,7 @@ lemma duality_biImpl_reversed (A B : PropForm) : (⊨ biImpl (duality2 A) (duali
   /- A <-> dualitydualityB met dualitydualityB <-> B wordt A <-> B-/
   exact biImpl_connection A (duality2 (duality2 B)) B step5 step3
 
-/-ik heb nog een andere substitution nodig denk ik? als ik het volgens het boek wil doen-/
+
 /-twee cases, -> en <-?-/
 theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (duality2 A) (duality2 B))) := by
   constructor
@@ -390,14 +383,6 @@ theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (
     exact duality_biImpl A B h
   · intro h
     exact duality_biImpl_reversed A B h
-
-/-lemma duality2_biImpl (A B : PropForm) : (⊨ biImpl A B) → (⊨ biImpl (duality2 A) (duality2 B)) := by
-  intro h
-  simp [PropForm.isValid] at *
-  intro a
-  sorry
-lemma duality2_biImpl_reversed (A B : PropForm) : (⊨ biImpl (duality2 A) (duality2 B)) → (⊨ biImpl A B) := by
-  sorry-/
 
 theorem modus_ponens (A B : PropForm) (h1 : ⊨ impl A B) (h1 : ⊨ A) : ⊨ B := by
   sorry

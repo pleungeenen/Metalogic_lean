@@ -112,7 +112,6 @@ def propExample2 := prop!{p ∧ (q → r)}
 
 def hello : String := "propositional logic"
 
-
 /-test-/
 def duality : PropForm -> PropForm
   | tr => fls
@@ -128,6 +127,7 @@ def duality : PropForm -> PropForm
 #eval duality (disj (var "k") (var "l"))
 #eval duality (conj (conj (var "p") (var "q")) (var "r"))
 
+/-duality functie-/
 def duality2 : PropForm -> PropForm
   | tr => tr
   | fls => fls
@@ -141,7 +141,7 @@ def duality2 : PropForm -> PropForm
   #eval duality2 (conj (conj (var "p") (var "k")) (var "l"))
   #eval duality2 (disj (disj (var "p") (var "k")) (var "l"))
 
-/-moet negation pakken, dus fls => tr?-/
+/-auxiliary functie-/
 def auxiliary : PropForm -> PropForm
   | tr => fls
   | fls => tr
@@ -152,6 +152,7 @@ def auxiliary : PropForm -> PropForm
   | impl A B => conj (neg (auxiliary A)) (auxiliary B)
   | biImpl A B => disj (conj (neg (auxiliary A)) (auxiliary B)) (conj (neg (auxiliary B)) (auxiliary A))
 
+/-substitution functie-/
 def substitution (t : String) (D : PropForm) : PropForm → PropForm
   | tr => tr
   | fls => fls
@@ -162,6 +163,7 @@ def substitution (t : String) (D : PropForm) : PropForm → PropForm
   | impl A B => impl (substitution t D A) (substitution t D B)
   | biImpl A B=> biImpl (substitution t D A) (substitution t D B)
 
+/-simultaneous substitution functie-/
 def simultaneous_substitution (_list : List (String × PropForm)) : PropForm → PropForm
 | tr => tr
 | fls => fls

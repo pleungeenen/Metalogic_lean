@@ -1,6 +1,6 @@
-name = "MyLeanProject"
+name = "metalogica_lean_project"
 version = "0.1.0"
-defaultTargets = ["myleanproject"]
+defaultTargets = ["metalogica_project"]
 
 [[require]]
 name = "mathlib"
@@ -10,5 +10,5 @@ git = "https://github.com/leanprover-community/mathlib4"
 name = "metalogica_lean_project"
 
 [[lean_exe]]
-name = "myleanproject"
+name = "metalogica_project"
 root = "Main"
