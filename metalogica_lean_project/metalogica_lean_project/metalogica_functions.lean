@@ -127,7 +127,7 @@ def duality : PropForm -> PropForm
 #eval duality (disj (var "k") (var "l"))
 #eval duality (conj (conj (var "p") (var "q")) (var "r"))
 
-/-duality function-/
+/-duality function, the correct one used-/
 def duality2 : PropForm -> PropForm
   | tr => tr
   | fls => fls

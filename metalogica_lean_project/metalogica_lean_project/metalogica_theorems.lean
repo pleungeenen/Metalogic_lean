@@ -384,5 +384,17 @@ theorem duality_theorem (A B : PropForm) : (⊨ (biImpl A B)) ↔ (⊨ (biImpl (
   · intro h
     exact duality_biImpl_reversed A B h
 
+
+/-extra-/
 theorem modus_ponens (A B : PropForm) (h1 : ⊨ impl A B) (h1 : ⊨ A) : ⊨ B := by
   sorry
+
+
+theorem term (p q : Prop) (h1 : p) (h2 : q) : p ∧ q :=
+  ⟨h1, h2⟩
+
+
+theorem tactic (p q : Prop) (h1 : p) (h2 : q) : p ∧ q := by
+  constructor
+  apply h1
+  apply h2
